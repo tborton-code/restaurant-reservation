@@ -115,6 +115,30 @@ export async function updateTable(reservation_id, table_id, signal) {
   return await fetchJson(url, options, []);
 }
 
+export async function updateReservation(reservation, signal) {
+  const url = new URL(`${API_BASE_URL}/reservations/${reservation.reservation_id}`);
+  const options = {
+    headers,
+    signal,
+    method: "PUT",
+    body: JSON.stringify({data: reservation}),
+  };
+  return await fetchJson(url, options)
+  .then(formatReservationDate)
+  .then(formatReservationTime);
+}
+
+export async function updateReservationStatus(data, reservation_id, signal) {
+  const url = new URL(`${API_BASE_URL}/reservations/${reservation_id}/status`);
+  const options = {
+    headers,
+    signal,
+    method: "PUT",
+    body: JSON.stringify({data}),
+  };
+  return await fetchJson(url, options);
+}
+
 export async function deleteTableReservation(table_id, signal) {
   const url = `${API_BASE_URL}/tables/${table_id}/seat`;
   const options = {

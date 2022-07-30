@@ -14,9 +14,10 @@ router.route("/")
     .all(methodNotAllowed);
 
 router.route("/:reservation_Id")
-    .get(controller.read);
+    .get(controller.read)
+    .put(controller.updateReservation);
 
 router.route("/:reservation_Id/status")
-    .put(controller.updateStatus)    
+    .put(controller.updateStatus);
     
 module.exports = router;

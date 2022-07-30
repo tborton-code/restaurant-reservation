@@ -18,7 +18,7 @@ const REQUIRED_PROPERTIES = [
   "people",
 ]
 
-const hasRequiredProperties = hasProperties(REQUIRED_PROPERTIES);
+const hasRequiredProperties = hasProperties(...REQUIRED_PROPERTIES);
 
 function validDate(req, res, next) {
   const date = req.body.data.reservation_date;
@@ -107,10 +107,11 @@ function checkIfBooked(req,res,next){
   if (status === "seated" || status === "finished"){
   return next({status:400,message:`Status cannot be ${status}`})
   }
+  return next()
 }
 
 function verifyStatus(req, res, next){
-	const validStatusList = ["booked","seated","finished"]
+	const validStatusList = ["booked","seated","finished", "cancelled"]
 	const {status} = req.body.data
 
 	const bodyStatus = res.locals.reservation.status
@@ -126,12 +127,15 @@ function verifyStatus(req, res, next){
 //CRUD Functions
 
 async function list(req, res, next) {
-  const { date, currentDate } = req.query;
+  const { date, currentDate, mobile_number } = req.query;
   if(date) {
     const data = await reservationsService.listByDate(date);
     res.json({ data });
   } else if (currentDate) {  
     const data = await reservationsService.listByDate(currentDate);
+  } else if(mobile_number){
+    const data = await reservationsService.search(mobile_number);
+    res.json({ data });
   } else {
     const data = await reservationsService.list();
     res.json({ data });
@@ -139,8 +143,8 @@ async function list(req, res, next) {
 }
 
 async function create(req, res, next) {
-  console.log("got to Create")
-  const reservation = req.body.data;
+  let reservation = req.body.data;
+  reservation = { ...reservation, status: "booked" };
   const { reservation_id } = await reservationsService.create(reservation);
   reservation.reservation_id = reservation_id;
   res.status(201).json({ data: reservation });
@@ -158,6 +162,14 @@ async function updateStatus(req,res,next){
 	const response = await reservationsService.updateStatus(updatedReservation,updatedReservation.reservation_id)
 	res.status(200).json({data:response})
 }
+
+async function updateReservation(req, res, next) {
+  const reservation = req.body.data;
+  const newReservation = await reservationsService.updateReservation(
+    reservation
+  );
+  res.status(200).json({ data: newReservation });
+}
  
 module.exports = {
   list: asyncErrorBoundary(list),
@@ -170,11 +182,20 @@ module.exports = {
           isInTheFuture,  
           isWithinValidHours,
           checkIfBooked,
-        asyncErrorBoundary(create)
-      ],
+        asyncErrorBoundary(create)],
   read: [validateReservationId, 
           asyncErrorBoundary(read)],
   updateStatus: [validateReservationId,
           verifyStatus,
           asyncErrorBoundary(updateStatus)],
+  updateReservation: [validateReservationId,
+          hasRequiredProperties,
+          validDate,
+          validTime,
+          validPeople,
+          isNotOnTuesday,
+          isInTheFuture,
+          isWithinValidHours,
+          checkIfBooked,
+          asyncErrorBoundary(updateReservation)],
 };
