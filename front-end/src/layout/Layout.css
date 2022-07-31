@@ -8,9 +8,8 @@
   border-color: #754574;
 }
 
-
-.table {
-  color: #786B77;
+.form-control {
+  max-width: 290px;
 }
 
 h1 {
@@ -20,4 +19,8 @@ h1 {
 #sidebarToggle {
   color: #752273;
   background-color: #752273;
+}
+
+.table {
+  color: #786B77;
 }
