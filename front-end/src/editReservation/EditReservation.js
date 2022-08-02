@@ -42,6 +42,7 @@ export default function EditReservation() {
             history.push(`/dashboard?date=${formData.reservation_date}`);
             return () => ac.abort();
         } catch (error) {
+            setError(error);
             console.log(error);
         }
     };
