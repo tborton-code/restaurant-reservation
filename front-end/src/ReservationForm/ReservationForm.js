@@ -1,53 +1,31 @@
-import React, {useState} from "react";
+import React from "react";
 import { useHistory } from "react-router-dom";
-import { createReservations } from "../utils/api";
-import ErrorAlert from "../layout/ErrorAlert";
 
-export default function CreateReservation() {
+export default function ReservationForm({
+    reservation,
+    setReservation,
+    submitFunction
+}) {
     const history = useHistory();
 
-    const initialFormState = {
-        first_name: "",
-        last_name: "",
-        mobile_number: "",
-        reservation_date: "",
-        reservation_time: "",
-        people: 0,
-        status: "booked",
-    }
+	const cancelHandler = (event) => {
+		history.goBack();
+	};
 
-    const [formData, setFormData] = useState({...initialFormState});
-    const [reservationsErrors, setReservationsErrors] = useState(null);
+	const changeHandler = (event) => {
+		const resKey = event.target.name;
+		let resValue = event.target.value;
+		if (resKey === "people" && resValue) {
+			resValue = parseInt(resValue);
+		}
+		setReservation({ ...reservation, [resKey]: resValue });
+	};
 
-    const changeHandler = (event) => {
-        setFormData({
-            ...formData,
-            [event.target.name]: event.target.value,
-        });
-    };
-
-    const handleSubmit = async (event) => {
-        event.preventDefault();
-        try {
-            setReservationsErrors(null);
-            const response = await createReservations({...formData, people: Number(formData.people)});
-            const date = response.reservation_date;
-            history.push(`/dashboard?date=${date}`)
-        } catch (error) {
-            setReservationsErrors(error);
-            console.log(error);
-        };
-        }
-
-    function cancelHandler() {
-        history.goBack();
-    }
+    let formData = reservation;
 
     return (
         <div>
-            <h1>Create Reservation</h1>
-            <ErrorAlert error={reservationsErrors} />
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={submitFunction}>
                     <div className="row">
                     <div className="form-group col">
                         <label>First Name
