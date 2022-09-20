@@ -50,3 +50,5 @@ This repository is set up as a _monorepo_, meaning that the frontend and backend
 7. Run `npm install`.
 8. Create the `./front-end/.env` file with `REACT_APP_API_BASE_URL=http://localhost:5001`.
 9. Run `npm run start:dev` to start your server in development mode from the main directory.
+
+<img width="1512" alt="Screen Shot 2022-09-20 at 12 15 26 AM" src="https://user-images.githubusercontent.com/100234844/191166511-6301405c-c203-4d7a-9569-b1d6d6f55ba1.png">
